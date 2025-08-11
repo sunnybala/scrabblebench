@@ -1,0 +1,4 @@
+ai-scrabble/*
+outputs/*
+*.xlsx
+.DS_Store
