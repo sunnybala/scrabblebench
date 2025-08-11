@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ScrabbleBench </title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="main-section">
+            <div class="board-container">
+                <div id="scrabble-board" class="scrabble-board"></div>
+            </div>
+            
+            <div class="players-section">
+                <div class="game-controls">
+                    <button id="start-game-btn" class="start-game-btn">Start Game</button>
+                    <button id="end-turn-btn" class="end-turn-btn" style="display: None;">End Turn</button>
+                    <div class="game-status">
+                        <div class="current-player-indicator">Current Player: <span id="current-player-name">Player 1</span></div>
+                        <div class="bag-tiles-indicator"># Bag Tiles: <span id="bag-tiles-count">98</span></div>
+                    </div>
+                </div>
+                
+                <div class="player-area" data-player="0">
+                    <div class="player-portrait"></div>
+                    <div class="player-info">
+                        <div class="player-name">Player 1</div>
+                        <div class="player-score">Score: <span>0</span> <div class="score-indicator"></div></div>
+                    </div>
+                    <div class="tile-rack"></div>
+                </div>
+                
+                <div class="player-area" data-player="1">
+                    <div class="player-portrait"></div>
+                    <div class="player-info">
+                        <div class="player-name">Player 2</div>
+                        <div class="player-score">Score: <span>0</span> <div class="score-indicator"></div></div>
+                    </div>
+                    <div class="tile-rack"></div>
+                </div>
+                
+                <div class="player-area" data-player="2">
+                    <div class="player-portrait"></div>
+                    <div class="player-info">
+                        <div class="player-name">Player 3</div>
+                        <div class="player-score">Score: <span>0</span> <div class="score-indicator"></div></div>
+                    </div>
+                    <div class="tile-rack"></div>
+                </div>
+                
+                <div class="player-area" data-player="3">
+                    <div class="player-portrait"></div>
+                    <div class="player-info">
+                        <div class="player-name">Player 4</div>
+                        <div class="player-score">Score: <span>0</span> <div class="score-indicator"></div></div>
+                    </div>
+                    <div class="tile-rack"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-log-section">
+            <h3>Game Log</h3>
+            <div id="game-log" class="game-log"></div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

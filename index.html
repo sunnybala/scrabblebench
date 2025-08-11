@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScrabbleBench</title>
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/scrabblebench/gh-pages-assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/scrabblebench/gh-pages-assets/favicon-16x16.png">
+    <link rel="shortcut icon" href="/scrabblebench/gh-pages-assets/favicon.ico">
+
+    <!-- Apple touch icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/scrabblebench/gh-pages-assets/apple-touch-icon.png">
+
+    <!-- Android/Chrome icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/scrabblebench/gh-pages-assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/scrabblebench/gh-pages-assets/android-chrome-512x512.png">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/scrabblebench/gh-pages-assets/site.webmanifest">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.5;
+            color: #2c1810;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(205, 164, 94, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 117, 65, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #f4e4bc 0%, #d4c5a9 50%, #c7b377 100%);
+            min-height: 100vh;
+            padding: 10px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(139, 117, 65, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 85% 75%, rgba(165, 139, 76, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(252, 248, 235, 0.95);
+            border-radius: 15px;
+            box-shadow: 
+                0 20px 40px rgba(139, 117, 65, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            border: 3px solid #8b7541;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: 
+                linear-gradient(135deg, #2c5530 0%, #1e3d21 50%, #0f2612 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px);
+            color: #f4e4bc;
+            text-align: center;
+            padding: 15px 25px;
+            position: relative;
+            border-bottom: 4px solid #8b7541;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(244, 228, 188, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 70%, rgba(244, 228, 188, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px, 25px 25px;
+        }
+
+        .logo-image {
+            max-width: 300px;
+            height: auto;
+            margin: 0 auto 10px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.4s; }
+        .section:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #2c5530;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(139, 117, 65, 0.3);
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 6px;
+            background: linear-gradient(135deg, #8b7541 0%, #c7b377 50%, #8b7541 100%);
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(139, 117, 65, 0.3);
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            color: #555;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #faf7ed 0%, #f0ead6 100%);
+            border: 3px solid #8b7541;
+            border-left: 8px solid #2c5530;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            box-shadow: 
+                0 8px 20px rgba(139, 117, 65, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #faf7ed 0%, #f0ead6 100%);
+            padding: 30px 25px;
+            border-radius: 8px;
+            border: 3px solid #8b7541;
+            box-shadow: 
+                0 8px 25px rgba(139, 117, 65, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.8),
+                inset 0 -2px 0 rgba(139, 117, 65, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(139, 117, 65, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.9),
+                inset 0 -2px 0 rgba(139, 117, 65, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(139, 117, 65, 0.3);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5530;
+            display: block;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(139, 117, 65, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #5d4e2a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .methodology-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .methodology-list li {
+            background: linear-gradient(135deg, #faf7ed 0%, #f0ead6 100%);
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #8b7541;
+            box-shadow: 
+                0 4px 12px rgba(139, 117, 65, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border-left: 6px solid #2c5530;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .methodology-list li:hover {
+            transform: translateX(8px);
+            box-shadow: 
+                0 6px 18px rgba(139, 117, 65, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .methodology-list li::before {
+            content: "✓";
+            color: #2c5530;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(139, 117, 65, 0.3);
+        }
+
+        .cta-section {
+            background: 
+                linear-gradient(135deg, #2c5530 0%, #1e3d21 50%, #0f2612 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(244,228,188,0.05) 2px, rgba(244,228,188,0.05) 4px);
+            color: #f4e4bc;
+            padding: 50px;
+            text-align: center;
+            border-radius: 15px;
+            margin-top: 40px;
+            border: 3px solid #8b7541;
+            position: relative;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid rgba(244, 228, 188, 0.3);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #f4e4bc 0%, #d4c5a9 100%);
+            color: #2c5530;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 3px solid #8b7541;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 20px;
+            text-shadow: none;
+            box-shadow: 
+                0 6px 15px rgba(139, 117, 65, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 
+                0 12px 30px rgba(139, 117, 65, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 5px;
+                border-radius: 10px;
+            }
+
+            header {
+                padding: 10px 15px;
+            }
+
+            .logo-image {
+                max-width: 250px;
+            }
+
+            header p {
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+            }
+
+            .section p {
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .byline {
+                color: lightgray;
+            }
+        }
+
+        .byline {
+            color: lightgray;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .byline a {
+            color: lightgray;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .byline a:hover {
+            color: #f4e4bc;
+            text-decoration: underline;
+        }
+
+        ul {
+            font-size: 0.9rem !important;
+            margin-left: 20px;
+        }
+
+        .author {
+            text-decoration: none;
+            /* font-weight: bold; */
+            color: lightslategray;
+        }
+
+        .author:hover {
+            text-decoration: underline;
+            color: rgb(211, 182, 15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="gh-pages-assets/scrabblebench.png" alt="ScrabbleBench" class="logo-image">
+            <p> A light exploration of the ability of LLMs to play Scrabble</p>
+            <!-- <p class="byline"> <a href="https://sunnybala.com/" target="_blank" rel="noopener noreferrer">Sunny Balasubramanian</a> </p> -->
+        </header>
+
+        <div class="content">
+            <section class="section">
+                <p>by <a class="author" href="https://www.sunnybala.com">🅂🅄🄽🄽🅈 🄱</a></p>
+                <p> <strong>update 8/9/25:</strong> I've also shared a shorter <a href="https://x.com/sunnymbala">thread about this</a> on X </p>
+                <h2>Introduction</h2>
+                <p>
+                    LLMs have been smashing through benchmarks recently, with notable results from both Deepmind and OpenAI demonstrating gold medal performance on the 2025 IMO. Evaluations have been improving monthly across domains, but even now, we still see simple mistakes in spelling related questions! 
+                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/tennessee.png" alt="Tennessee Scrabble Board Example" style="min-width: 400px; max-width: 20%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div>
+                <p>
+                    <strong>ScrabbleBench</strong> evalues models by their ability to play the classic word game <strong>Scrabble ®</strong>. This project uses a minimal webapp for viewing the game, Kamil Mielnik's <a href="https://github.com/kamilmielnik/scrabble-solver">open source scrabble solver</a>, and the OpenRouter API to coordinate between models. Source code and instructions for running are <a href="#"> available on GitHub</a>.
+                </p>
+                <p>
+                    Seeing how these AI models can reason though gameplay allows us to have evaluations that naturally scale as models become stronger. 
+                    I test both self-play and head to head tournaments against other top models to evaluate game performance using a slightly modified ruleset. 
+                    Deepmind has <a href="https://x.com/demishassabis/status/1952436066524299432">recently announced</a> a related but more organized approach 
+                    to LLM gaming with the Kaggle Game Arena. They used a live-streamed chess tournament between models to start it off; I'm excited to see more
+                    games expected in the future! 
+                </p>
+            </section>
+
+            <section class="section">
+                <h2>Current Ranking (Self-Play Aug 2025) </h2>
+                <p>
+                    Each model played a 4-player game with 4 clones of itself under a modified ruleset (see methodology notes). 
+                    The seed of each game is fixed, so initial tile distribution is the same for all models. 
+                </p>
+                <p>
+                    OpenAI's GPT-5 leads the way on the self-play average score, narrowly beating out Google's Gemini 2.5 Pro around the 150 point mark.
+                    There's another cluster of models around 120, with Claude Sonnet 4, Grok 3, and Qwen3-235B-thinking neck and neck. 
+                    Generally, thinking models outperformed non-thinking variants. Surprisingly Opus underperformed Sonnet, but with only 4 sets of actions
+                    per model, the sample size is still small. Grok 4 was not tested due to API issues.
+                </p>
+                <p>
+                    <strong> Performance Metrics </strong>
+                </p>
+                <ul>
+                        <li><strong>Avg Score:</strong> Mean score of all 4 clones of the model in the self-play game (higher is better)</li>
+                        <li><strong>Avg Word Percentile:</strong> Each turn, calculate the percentile of the score of the played word against all other playable words (higher is better)</li>
+                        <li><strong>Median # Possible Words:</strong> Average across the game of how many possible words there were each turn. Lower indicates harder rounds. </li>
+                        <li><strong>Solve %:</strong> How often the models produced a word based on # possible words. Easy (over 250 words), Medium (100-250), Hard (under 100 words). </li>
+                        <li><strong>Median Turn Time:</strong> How long in seconds did the median turn by this model take? Each model can have up to 6 inference calls per turn. </li>
+                </ul>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/self-play.png" alt="Self Play Ranking" style="min-width: 400px; max-width:80%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div>
+                <p>
+                    Given this self-play ranking, I continued with <strong>OpenAI's GPT-5, Google's Gemini 2.5 Pro,  Anthropic's Sonnet 4, and Xai's Grok 3</strong>for the tournament.
+                </p>
+            </section>
+
+            <section class="section">
+                <h2> Top 4 Tournament (Aug 2025) </h2>
+                <p>
+                    I ran 4 games between the models, shifting the player # by one so that each model got to play a game in each position (1-4).
+                    Games were tight between Gemini and GPT-5! GPT-5 managed to win 2, perfectly tie in with Gemini in 1, and lose to Gemini in another. 
+                    Sonnet generally outperformed Grok 3 by a large margin due to some crushingly low scores for Grok in games 1 & 2.
+                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/tournament.png" alt="Tournament Results" style="min-width: 400px; max-width:60%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div>
+                <p>
+                    Videos of the games can be found on this playlist.
+                </p>
+            </section>
+            <section class="section">
+                <h2>Methodology Notes</h2>
+                <p>
+                    A series of modifications to the rules were necessary to make this game playable for models. 
+                </p>
+                <h4> Prompting </h4>
+                <p>
+                    Each round, I prompted the model with the rules of Scrabble (including tile values and board bonuses like double word/letter),
+                    the state of the board, the tile rack, other player scores, and the number of tiles remaining. Each player was given 6 chances 
+                    to produce a valid move. If invalid words were picked, I re-prompted and noted that that specific word was invalid. The models
+                    were asked to briefly explain their reason and then their move (e.g. playword BOY, exhange Y,J,M) which I parsed and executed.
+                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/prompt.png" alt="Example Prompt" style="min-width: 400px; max-width:60%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div>
+                <h4> Word Placement </h4>
+                <p> Initially, I had wanted the models to instruct exactly where to play their preferred word using an (x,y) coordinate system.
+                    I quickly saw that no model was able to do this consistently, often trying to place words in invalid positions. Sometimes off-by-one, 
+                    sometimes in totally strange, unconnected places. As a result, I switched to just asking for the desired word. I run a 
+                    <a href="https://github.com/kamilmielnik/scrabble-solver">solver</a> to find a placement of that word if possible, otherwise re-prompt
+                    and mention that specific word is invalid.
+                </p>
+                <h4> Player Order & End Conditions </h4>
+                <p> The first player in Scrabble gets a double word score right off the bat. This can often lead to an advantage, so to try and mitigate this 
+                    the self-play rounds evaluate the experience of the model across all positions in aggregate. For the tournament, I rotate player orders. 
+                    The game can end in a variety of ways due to successive passes or a player finishing their tiles. I end the game when 4 successive passes happen 
+                    or some large turn count is met (60 turns). I ignore scoring rules around the tiles other players have at the end. These changes focus the 
+                    game scoring on word building and try to even out the playing field (all else equal, you might expect the first player to finish their tiles first!).
+                </p> 
+            </section>
+            <section class="section">
+                <h2>Behavior Quirks</h2>
+                <p> Over the many games tested, there's a few interesting behaviors I noticed from these LLMs that differ from casual human play. </p>
+                <h4> Rack Blinders </h4>
+                <p> A tendency across models is to focus on the letters in the rack only. Most of the invalid words actually come from this set, 
+                    where the model might find a decent work in their rack and just claim that they can play it somewhere, even if there is 
+                    no connection to a real word or they hallucinate letters.
+                </p> 
+                <div class="highlight-box">
+                    <p><strong>Bad Placement Reasoning Example :</strong> Using the blank as an 'I' and forming 'EXCRUCIATING' vertically from the 'X' in 'CURD' allows
+                         a high-scoring play with the 'X' on a triple-letter score. This creates multiple crosswords and maximizes points with the 
+                         'K' and 'X' bonuses. The 50-point bonus for using all tiles is also achieved.</p>
+                </div>
+                <h4> Parallel Plays </h4>
+                <p> The models often play their fully contained rack words parallel to other words, creating a bunch of small perpendicular words in the process. 
+                    This is impressive looking at first glance since it requires knowledge of many small 2-3 letters words. However, while the reasoning sometimes 
+                    points to this driving their word choice, I think the solver workflow is another culprit. Using the solver, I find the optimal placement of 
+                    the word that they suggest (benefit of the doubt). This means if they're just playing off their rack without looking at the board, they can 
+                    still "get lucky" and get their word placed. 
+                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/parallel-words.png" alt="Example Prompt" style="min-width: 400px; max-width:40%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div> 
+                <h4> Frequent Exchanging </h4>
+                <p> Most casual players would rather play tiny words than exchange and forfeit a round. In contrast, AI models tend to hold out for great racks 
+                    and exchange frequently, to the detriment of the viewer. It's hard to really say that this is optimal or not; they don't always find/play 
+                    the best words, but it's not uncommon to watch players exchange multiple times in a row. The more aggressive (playing more words) the model
+                    is in this sea of competition, the faster it can pull away. 
+                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="gh-pages-assets/exchange.png" alt="Example Prompt" style="min-width: 400px; max-width:40%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
+                </div> 
+            </section>
+            <section class="section">
+                <h2>Costs</h2>
+                <p> Costs vary dramatically between these models. I found it pretty surprising just how expensive it was to use some of these 
+                    thinking models. Gemini Pro was the worst offender here -- it would consume a ton of thinking tokens, only to output a invalid 
+                    word and charge up to 20c for just a single try. A 4-player self-play game with Gemini costs ~$25. GPT-5-high came in at roughly 
+                    half the price of Gemini. Both of these models would take several minutes to make an attempt.
+                </p> 
+                <p>
+                    On the other hand, Gemini Flash is truly impressive in getting great results and costing a few cents per game! It's fast enough
+                    that watching the scrabble board ends up feeling pretty satisfying. I occasionally use flash for bulk tasks and these results 
+                    line up with my personal experience that the bang for buck is insane. Perhaps with more games to address robustness GPT5-nano 
+                    could be a competitor here on Scrabble. 
+                </p>
+            </section>
+            <section class="section">
+                <h2>Future Research</h2>
+                <p> Well, where do we go from here? I'll describe a few extensions that I think could be interesting. 
+                </p>
+                <h4> Robustness Check </h4>
+                <p> Every game seed could have a different ranking, but spending a ton of money benchmarking the models wasn't my goal here.
+                    It's probably the fastest way to get a more definitive answer! However, another approach is to have all models play 
+                    the same game together. At every round, you ask every model to pick a word given the board and rack. You can then score 
+                    these words against each other. This is way more fair than simulating real games, as each model is evaluated on its 
+                    ability to solve the same problem.
+                </p>
+                <h4> Turn Dataset </h4>
+                <p> By running this approach with a model like Gemini Flash, you can cheaply generate a whole dataset of Scrabble boards, racks, 
+                    and possible scoring words. This frees you from actually having to play the games out and lets you do the experiment above 
+                    (or whatever RL tasks you want!). 
+                </p>
+                <h4> Human Play</h4>
+                <p> If this were more cost effective and timely to run, I'd love to pit GPT-5 and Gemini Pro 2.5 against actual players. In its
+                    current state, it's difficult to get a realistic benchmark of how these actually compare to human play -- I suspect that 
+                    playing this single seeded game I used for this experiment would be insufficient (plus I've seen many of the great words)
+                    while analyzing these games!
+                </p>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
