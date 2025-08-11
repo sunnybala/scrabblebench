@@ -1,6 +1,6 @@
 # ScrabbleBench
 
-ScrabbleBench tests the ability of AI models to play scrabble against each other. Read more about this project (here)[https://sunnybala.github.io/scrabblebench/]!
+ScrabbleBench tests the ability of AI models to play scrabble against each other. Read more about this project [here](https://sunnybala.github.io/scrabblebench/)!
 
 ---
 
@@ -17,7 +17,7 @@ git clone https://github.com/sunnybala/scrabblebench.git
 ```bash
 git clone https://github.com/kamilmielnik.git
 ```
-Follow the instructions at (the repo)[https://github.com/kamilmielnik] to kick off the solver server. I ran it at port 3000 -- change app.py if your solver is hosted on a different port like 3333.
+Follow the instructions at [the repo](https://github.com/kamilmielnik) to kick off the solver server. I ran it at port 3000 -- change app.py if your solver is hosted on a different port like 3333.
 ```
 # modify app.py
 response = requests.post('http://localhost:3000/api/solve', headers=headers, json=json_data)
