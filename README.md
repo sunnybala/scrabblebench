@@ -1,6 +1,6 @@
 # ScrabbleBench
 
-ScrabbleBench tests the ability of AI models to play scrabble against each other.
+ScrabbleBench tests the ability of AI models to play scrabble against each other. Read more about this project (here)[https://sunnybala.github.io/scrabblebench/]!
 
 ---
 
