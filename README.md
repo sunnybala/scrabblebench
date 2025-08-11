@@ -28,13 +28,16 @@ response = requests.post('http://localhost:3000/api/solve', headers=headers, jso
 pip install -r requirements.txt
 ```
 
-### 4. Input Keys / Ports
+### 4. Input Keys / Params
 In static/script.js, enter in your OpenRouter key.
 ```
 // insecure for public deployment! use this to run locally.
 const OPENROUTER_KEY = ''
 ```
-
+Additionally, pick a seed in script.py so that games are consistent.
+```
+this.rng = new SeededRandom(42); 
+```
 ### 5. Kick off this App
 ```
 python app.py
