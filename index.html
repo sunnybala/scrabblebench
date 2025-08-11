@@ -407,18 +407,24 @@
                 <p> <strong>update 8/9/25:</strong> I've also shared a shorter <a href="https://x.com/sunnymbala">thread about this</a> on X </p>
                 <h2>Introduction</h2>
                 <p>
-                    LLMs have been smashing through benchmarks recently, with notable results from both Deepmind and OpenAI demonstrating gold medal performance on the 2025 IMO. Evaluations have been improving monthly across domains, but even now, we still see simple mistakes in spelling related questions! 
+                    LLMs have been smashing through benchmarks recently, with notable results from both DeepMind and OpenAI 
+                    demonstrating gold medal performance on the 2025 IMO. Evaluations have been improving monthly across domains,
+                     but even now, we still see simple mistakes in spelling related questions! 
                 </p>
                 <div style="text-align: center; margin: 20px 0;">
                     <img src="gh-pages-assets/tennessee.png" alt="Tennessee Scrabble Board Example" style="min-width: 400px; max-width: 20%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
                 </div>
                 <p>
-                    <strong>ScrabbleBench</strong> evalues models by their ability to play the classic word game <strong>Scrabble ®</strong>. This project uses a minimal webapp for viewing the game, Kamil Mielnik's <a href="https://github.com/kamilmielnik/scrabble-solver">open source scrabble solver</a>, and the OpenRouter API to coordinate between models. Source code and instructions for running are <a href="#"> available on GitHub</a>.
+                    <strong>ScrabbleBench</strong> evaluates models by their ability to play the classic word game 
+                    <strong>Scrabble ®</strong>. This project uses a minimal webapp for viewing the game, 
+                    Kamil Mielnik's <a href="https://github.com/kamilmielnik/scrabble-solver">open source scrabble solver</a>,
+                     and the OpenRouter API to coordinate between models. Source code and instructions for running are <a href="#"> 
+                        available on GitHub</a>.
                 </p>
                 <p>
                     Seeing how these AI models can reason though gameplay allows us to have evaluations that naturally scale as models become stronger. 
-                    I test both self-play and head to head tournaments against other top models to evaluate game performance using a slightly modified ruleset. 
-                    Deepmind has <a href="https://x.com/demishassabis/status/1952436066524299432">recently announced</a> a related but more organized approach 
+                    I test both self-play and head-to-head tournaments against other top models to evaluate game performance using a slightly modified ruleset. 
+                    DeepMind has <a href="https://x.com/demishassabis/status/1952436066524299432">recently announced</a> a related but more organized approach 
                     to LLM gaming with the Kaggle Game Arena. They used a live-streamed chess tournament between models to start it off; I'm excited to see more
                     games expected in the future! 
                 </p>
@@ -481,7 +487,7 @@
                     Each round, I prompted the model with the rules of Scrabble (including tile values and board bonuses like double word/letter),
                     the state of the board, the tile rack, other player scores, and the number of tiles remaining. Each player was given 6 chances 
                     to produce a valid move. If invalid words were picked, I re-prompted and noted that that specific word was invalid. The models
-                    were asked to briefly explain their reason and then their move (e.g. playword BOY, exhange Y,J,M) which I parsed and executed.
+                    were asked to briefly explain their reason and then their move (e.g. playword BOY, exchange Y,J,M) which I parsed and executed.
                 </p>
                 <div style="text-align: center; margin: 20px 0;">
                     <img src="gh-pages-assets/prompt.png" alt="Example Prompt" style="min-width: 400px; max-width:60%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 117, 65, 0.3);">
@@ -537,13 +543,13 @@
             <section class="section">
                 <h2>Costs</h2>
                 <p> Costs vary dramatically between these models. I found it pretty surprising just how expensive it was to use some of these 
-                    thinking models. Gemini Pro was the worst offender here -- it would consume a ton of thinking tokens, only to output a invalid 
+                    thinking models. Gemini Pro was the worst offender here -- it would consume a ton of thinking tokens, only to output an invalid 
                     word and charge up to 20c for just a single try. A 4-player self-play game with Gemini costs ~$25. GPT-5-high came in at roughly 
-                    half the price of Gemini. Both of these models would take several minutes to make an attempt.
+                    half the price of Gemini. Both models would take several minutes to make an attempt.
                 </p> 
                 <p>
                     On the other hand, Gemini Flash is truly impressive in getting great results and costing a few cents per game! It's fast enough
-                    that watching the scrabble board ends up feeling pretty satisfying. I occasionally use flash for bulk tasks and these results 
+                    that watching the scrabble board ends up feeling satisfying. I occasionally use flash for bulk tasks and these results 
                     line up with my personal experience that the bang for buck is insane. Perhaps with more games to address robustness GPT5-nano 
                     could be a competitor here on Scrabble. 
                 </p>
@@ -556,17 +562,17 @@
                 <p> Every game seed could have a different ranking, but spending a ton of money benchmarking the models wasn't my goal here.
                     It's probably the fastest way to get a more definitive answer! However, another approach is to have all models play 
                     the same game together. At every round, you ask every model to pick a word given the board and rack. You can then score 
-                    these words against each other. This is way more fair than simulating real games, as each model is evaluated on its 
+                    these words against each other. This is way fairer than simulating real games, as each model is evaluated on its 
                     ability to solve the same problem.
                 </p>
                 <h4> Turn Dataset </h4>
                 <p> By running this approach with a model like Gemini Flash, you can cheaply generate a whole dataset of Scrabble boards, racks, 
-                    and possible scoring words. This frees you from actually having to play the games out and lets you do the experiment above 
+                    and possible scoring words. This frees you from having to play the full games out and lets you do the experiment above 
                     (or whatever RL tasks you want!). 
                 </p>
                 <h4> Human Play</h4>
                 <p> If this were more cost effective and timely to run, I'd love to pit GPT-5 and Gemini Pro 2.5 against actual players. In its
-                    current state, it's difficult to get a realistic benchmark of how these actually compare to human play -- I suspect that 
+                    current state, it's difficult to get a realistic benchmark of how these compare to human play -- I suspect that 
                     playing this single seeded game I used for this experiment would be insufficient (plus I've seen many of the great words)
                     while analyzing these games!
                 </p>
