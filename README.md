@@ -15,7 +15,7 @@ git clone https://github.com/sunnybala/scrabblebench.git
 
 ### 2. Clone the Scrabble Solver Repository
 ```bash
-git clone https://github.com/kamilmielnik.git
+git clone https://github.com/kamilmielnik/scrabble-solver.git
 ```
 Follow the instructions at [the repo](https://github.com/kamilmielnik) to kick off the solver server. I ran it at port 3000 -- change app.py if your solver is hosted on a different port like 3333.
 ```
@@ -47,3 +47,6 @@ http://localhost:5001/?model1=google/gemini-2.0-flash-lite-001&model2=google/gem
 
 http://localhost:5001/?model1=moonshotai/kimi-k2&model2=moonshotai/kimi-k2&model3=moonshotai/kimi-k2&model4=moonshotai/kimi-k2
 ```
+
+When the game is done, the turn actions and final board will be downloaded automatically. If you set tournament=True in the url params, images of all boards will be saved down 
+in a json of base64 encoded images.
