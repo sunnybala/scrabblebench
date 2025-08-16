@@ -58,5 +58,5 @@ When the game is done, the turn actions and final board will be downloaded autom
 ### 4. URL params
 There's a few extra URL params you can use to get different behavior.
 If you set tournament=True in the url params, images of all boards will be saved down in a json of base64 encoded images. This is for making videos.
-If you set dataset=True in the url params, the board, rack and possible words will be saved down each round. This is for making the 5K dataset dataset.json that 
+If you set dataset=True in the url params, the board, rack and possible words will be saved down each round. This is for making the 5K dataset `dataset.json` that 
 I've also [hosted on huggingface](https://huggingface.co/datasets/sunnymbala/scrabble-rounds-5k).
