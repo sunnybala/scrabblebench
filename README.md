@@ -17,20 +17,22 @@ git clone https://github.com/sunnybala/scrabblebench.git
 ```bash
 git clone https://github.com/kamilmielnik/scrabble-solver.git
 ```
+
 Follow the instructions at [the repo](https://github.com/kamilmielnik) to kick off the solver server. I ran it at port 3000 -- change app.py if your solver is hosted on a different port like 3333.
-```
+
+```python
 # modify app.py
 response = requests.post('http://localhost:3000/api/solve', headers=headers, json=json_data)
-``
+```
 
 ### 3. Install Python Dependencies in This Repo. I used python 3.9.4 for reference.
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Input Keys / Params
 In .env, enter in your OpenRouter key and your xAI key.
-```
+```python
 XAI_API_KEY = 'blah'
 OPENROUTER_API_KEY = 'blah'
 ```
@@ -57,4 +59,4 @@ When the game is done, the turn actions and final board will be downloaded autom
 There's a few extra URL params you can use to get different behavior.
 If you set tournament=True in the url params, images of all boards will be saved down in a json of base64 encoded images. This is for making videos.
 If you set dataset=True in the url params, the board, rack and possible words will be saved down each round. This is for making the 5K dataset dataset.json that 
-I've also [hosted on huggingface]().
+I've also [hosted on huggingface](https://huggingface.co/datasets/sunnymbala/scrabble-rounds-5k).
