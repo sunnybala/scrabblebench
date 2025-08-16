@@ -23,16 +23,16 @@ Follow the instructions at [the repo](https://github.com/kamilmielnik) to kick o
 response = requests.post('http://localhost:3000/api/solve', headers=headers, json=json_data)
 ``
 
-### 3. Install Python Dependencies in This Repo
+### 3. Install Python Dependencies in This Repo. I used python 3.9.4 for reference.
 ```
 pip install -r requirements.txt
 ```
 
 ### 4. Input Keys / Params
-In static/script.js, enter in your OpenRouter key.
+In .env, enter in your OpenRouter key and your xAI key.
 ```
-// insecure for public deployment! use this to run locally.
-const OPENROUTER_KEY = ''
+XAI_API_KEY = 'blah'
+OPENROUTER_API_KEY = 'blah'
 ```
 Additionally, pick a seed in script.py so that games are consistent.
 ```
@@ -51,5 +51,10 @@ http://localhost:5001/?model1=google/gemini-2.0-flash-lite-001&model2=google/gem
 http://localhost:5001/?model1=moonshotai/kimi-k2&model2=moonshotai/kimi-k2&model3=moonshotai/kimi-k2&model4=moonshotai/kimi-k2
 ```
 
-When the game is done, the turn actions and final board will be downloaded automatically. If you set tournament=True in the url params, images of all boards will be saved down 
-in a json of base64 encoded images.
+When the game is done, the turn actions and final board will be downloaded automatically. 
+
+### 4. URL params
+There's a few extra URL params you can use to get different behavior.
+If you set tournament=True in the url params, images of all boards will be saved down in a json of base64 encoded images. This is for making videos.
+If you set dataset=True in the url params, the board, rack and possible words will be saved down each round. This is for making the 5K dataset dataset.json that 
+I've also [hosted on huggingface]().
