@@ -1,6 +1,3 @@
-// insecure for public deployment! use this to run locally.
-const OPENROUTER_KEY = ''
-
 function downloadJSON(obj, filename = 'players.json') {
     const jsonStr = JSON.stringify(obj, null, 2); // Pretty print with 2-space indentation
     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -28,6 +25,11 @@ function getModelFromURLParams() {
 function getTournamentFromURLParams() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('tournament') === 'True';
+}
+
+function getDatasetFromURLParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('dataset') === 'True';
 }
 
 function hasModelParamsInURL() {
@@ -205,8 +207,11 @@ class ScrabbleGame {
         console.log('Player models assigned:', this.players.map(p => ({ name: p.name, model: p.model })));
         
         // Initialize seeded random number generator for consistent tile dealing
-        // Fixed seed for reproducible games
-        this.rng = new SeededRandom(42); // self play seed
+        // Use random seed if dataset mode is enabled, otherwise use fixed seed for reproducible games
+        const useRandomSeed = getDatasetFromURLParams();
+        const seed = useRandomSeed ? Math.floor(Math.random() * 1000000) : 42;
+        this.rng = new SeededRandom(seed);
+        this.gameSeed = seed; // Store seed for dataset export
         
         this.currentPlayer = 0;
         this.tileBag = this.initializeTileBag();
@@ -1130,6 +1135,20 @@ function printMatrix(matrix) {
     .join('\n');
 }
 
+function simplifyPossibleWords(possibleWords) {
+  const simplified = [];
+  for (const [word, data] of Object.entries(possibleWords)) {
+    if (data.cells && data.cells.length > 0) {
+      const startX = data.cells[0].x;
+      const startY = data.cells[0].y;
+      const endX = data.cells[data.cells.length - 1].x;
+      const endY = data.cells[data.cells.length - 1].y;
+      simplified.push([word, data.points, startX, startY, endX, endY]);
+    }
+  }
+  return simplified;
+}
+
 async function getAIAction(priorAttempts=[]) {
     console.log('getAIAction called with prior attempts:', priorAttempts);
     if (priorAttempts.length > 5) {
@@ -1147,7 +1166,7 @@ async function getAIAction(priorAttempts=[]) {
         game.passCount += 1;
         
         // Add to export data
-        game.exportData.push({
+        const exportEntry = {
             player: playerName,
             initial_tiles: initialTiles.map(t => t.letter),
             action: 'pass',
@@ -1156,7 +1175,16 @@ async function getAIAction(priorAttempts=[]) {
             playerScorePre: preScore,
             actionScore: 0,
             wordPercentile: null, 
-        });
+        };
+        
+        // Add ASCII board and possible words if dataset mode is enabled
+        if (getDatasetFromURLParams()) {
+            exportEntry.ascii_board = printMatrix(window.game.boardState);
+            // For the "too many attempts" pass, we don't have possibleWords calculated
+            exportEntry.possible_words = {};
+        }
+        
+        game.exportData.push(exportEntry);
         
         window.game.renderPlayerTiles(window.game.currentPlayer);
 
@@ -1175,23 +1203,16 @@ async function getAIAction(priorAttempts=[]) {
     console.log('Possible words for AI:', Object.keys(possibleWords).length);
 
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('/api/completions', {
             method: 'POST',
             headers: {
-                Authorization: `Bearer ${OPENROUTER_KEY}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 model: window.game.players[currentPlayer].model,
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-                reasoning: {"effort":"high", "enabled":true}
-            }),
+                prompt: prompt}),
         });
+
         console.log('Response status:', response.status, 'OK:', response.ok);
         
         // Check if response is successful
@@ -1199,32 +1220,10 @@ async function getAIAction(priorAttempts=[]) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        // Check if response has content
-        console.log('checking if there is text')
-        const responseText = await response.text();
-        if (!responseText) {
-            throw new Error('Empty response from API');
-        }
-        
-        // Try to parse JSON
-        console.log('trying to parse json')
-        let data;
-        try {
-            data = JSON.parse(responseText);
-            console.log(data);
-        } catch (parseError) {
-            console.error('JSON parse error. Response text:', responseText);
-            throw new Error(`Invalid JSON response: ${parseError.message}`);
-        }
-        
-        // Validate response structure
-        if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
-            console.error('Invalid response structure:', data);
-            throw new Error('API response missing expected structure');
-        }
-        let msg = data.choices[0].message.content.trim();
+        data = await response.json();
+        let msg = data['msg'].trim();
+
         console.log(`${window.game.players[currentPlayer].model} Response:`, msg);
-        // msg = (msg.split('\n').slice(-3,)).join('\n');
         if (msg.includes('---')){
             msg = msg.split('----').slice(1).join('').trim()
         }
@@ -1260,7 +1259,7 @@ async function getAIAction(priorAttempts=[]) {
                 game.passCount = 0;
 
                 // Add to export data
-                game.exportData.push({
+                const exportEntry = {
                     player: playerName,
                     initial_tiles: initialTiles.map(t => t.letter),
                     action: `playword ${word_attempt}`,
@@ -1270,7 +1269,15 @@ async function getAIAction(priorAttempts=[]) {
                     actionScore: turnScore,
                     wordPercentile: percentile,
                     numPossibleWords: Object.keys(possibleWords).length, 
-                });
+                };
+                
+                // Add ASCII board and possible words if dataset mode is enabled
+                if (getDatasetFromURLParams()) {
+                    exportEntry.ascii_board = printMatrix(window.game.boardState);
+                    exportEntry.possible_words = simplifyPossibleWords(possibleWords);
+                }
+                
+                game.exportData.push(exportEntry);
                 
                 return 0;
             } else {
@@ -1292,7 +1299,7 @@ async function getAIAction(priorAttempts=[]) {
                 game.passCount = 0;
                 
                 // Add to export data
-                game.exportData.push({
+                const exportEntry = {
                     player: playerName,
                     initial_tiles: initialTiles.map(t => t.letter),
                     action: `exchange ${validTilesToExchange.join(',')}`,
@@ -1302,7 +1309,15 @@ async function getAIAction(priorAttempts=[]) {
                     actionScore: 0,
                     wordPercentile: null,
                     numPossibleWords: Object.keys(possibleWords).length,
-                });
+                };
+                
+                // Add ASCII board and possible words if dataset mode is enabled
+                if (getDatasetFromURLParams()) {
+                    exportEntry.ascii_board = printMatrix(window.game.boardState);
+                    exportEntry.possible_words = simplifyPossibleWords(possibleWords);
+                }
+                
+                game.exportData.push(exportEntry);
                 
                 return 0;
             }
@@ -1312,7 +1327,7 @@ async function getAIAction(priorAttempts=[]) {
             game.passCount += 1;
             
             // Add to export data
-            game.exportData.push({
+            const exportEntry = {
                 player: playerName,
                 initial_tiles: initialTiles.map(t => t.letter),
                 action: 'pass',
@@ -1322,7 +1337,15 @@ async function getAIAction(priorAttempts=[]) {
                 actionScore: 0,
                 wordPercentile: null, 
                 numPossibleWords: Object.keys(possibleWords).length,
-            });
+            };
+            
+            // Add ASCII board and possible words if dataset mode is enabled
+            if (getDatasetFromURLParams()) {
+                exportEntry.ascii_board = printMatrix(window.game.boardState);
+                exportEntry.possible_words = simplifyPossibleWords(possibleWords);
+            }
+            
+            game.exportData.push(exportEntry);
             
             window.game.renderPlayerTiles(window.game.currentPlayer);
 
@@ -1491,6 +1514,34 @@ async function downloadGameData(){
         let output = {};
         output['players'] = window.game.players;
         output['actions'] = window.game.exportData;
+        
+        // Check if dataset flag is enabled
+        const includeDataset = getDatasetFromURLParams();
+        if (includeDataset) {
+            // Add ASCII board representation
+            output['ascii_board'] = printMatrix(window.game.boardState);
+            
+            // Add game seed used for random number generation
+            output['game_seed'] = window.game.gameSeed;
+            
+            // Add possible words for current player (if game is still in progress)
+            if (window.game.currentPlayer !== undefined && window.game.turnCount < 60 && window.game.passCount < 4) {
+                try {
+                    const possibleWords = await getPossibleWords(window.game.currentPlayer);
+                    output['possible_words'] = simplifyPossibleWords(possibleWords);
+                    output['current_player'] = window.game.currentPlayer;
+                    output['current_player_tiles'] = window.game.players[window.game.currentPlayer].tiles.map(t => t.letter);
+                } catch (error) {
+                    console.error('Error getting possible words for dataset:', error);
+                    output['possible_words'] = [];
+                    output['possible_words_error'] = error.message;
+                }
+            } else {
+                output['possible_words'] = [];
+                output['possible_words_note'] = 'Game ended, no possible words calculated';
+            }
+        }
+        
         downloadJSON(output, ts+'_game.json');
         
         // Also capture the game board as PNG
@@ -1502,8 +1553,40 @@ async function downloadGameData(){
         }
 }
 
-function downloadExportData(){
-        downloadJSON(window.game.exportData, 'game_export_data.json');
+async function downloadExportData(){
+        let output = window.game.exportData;
+        
+        // Check if dataset flag is enabled
+        const includeDataset = getDatasetFromURLParams();
+        if (includeDataset) {
+            let enhancedOutput = {
+                export_data: output,
+                ascii_board: printMatrix(window.game.boardState),
+                players: window.game.players,
+                game_seed: window.game.gameSeed
+            };
+            
+            // Add possible words for current player (if game is still in progress)
+            if (window.game.currentPlayer !== undefined && window.game.turnCount < 60 && window.game.passCount < 4) {
+                try {
+                    const possibleWords = await getPossibleWords(window.game.currentPlayer);
+                    enhancedOutput['possible_words'] = simplifyPossibleWords(possibleWords);
+                    enhancedOutput['current_player'] = window.game.currentPlayer;
+                    enhancedOutput['current_player_tiles'] = window.game.players[window.game.currentPlayer].tiles.map(t => t.letter);
+                } catch (error) {
+                    console.error('Error getting possible words for export dataset:', error);
+                    enhancedOutput['possible_words'] = [];
+                    enhancedOutput['possible_words_error'] = error.message;
+                }
+            } else {
+                enhancedOutput['possible_words'] = [];
+                enhancedOutput['possible_words_note'] = 'Game ended, no possible words calculated';
+            }
+            
+            downloadJSON(enhancedOutput, 'game_export_data_with_dataset.json');
+        } else {
+            downloadJSON(output, 'game_export_data.json');
+        }
 }
 
 function buildPrompt(priorAttempts=[]){

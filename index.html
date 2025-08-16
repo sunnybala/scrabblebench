@@ -438,8 +438,8 @@
                 <p>
                     OpenAI's GPT-5 leads the way on the self-play average score, narrowly beating out Google's Gemini 2.5 Pro around the 150 point mark.
                     There's another cluster of models around 120, with Claude Sonnet 4, Grok 3, and Qwen3-235B-thinking neck and neck. 
-                    Generally, thinking models outperformed non-thinking variants. Surprisingly Opus underperformed Sonnet, but with only 4 sets of actions
-                    per model, the sample size is still small. Grok 4 was not tested due to API issues.
+                    Generally, thinking models outperformed non-thinking variants. Surprisingly Opus underperformed Sonnet and Grok 4 underperformed Grok 3,
+                    but with only 4 sets of actions per model, the sample size is still small. 
                 </p>
                 <p>
                     <strong> Performance Metrics </strong>
@@ -557,14 +557,16 @@
                 <h2>Future Research</h2>
                 <p> Well, where do we go from here? I'll describe a few extensions that I think could be interesting. 
                 </p>
-                <h4> Robustness Check </h4>
+                <p> <strong> update 8/16/25: </strong> see <a href="">my dataset</a> which attempts to address (1) and (2) below.  
+                </p>
+                <h4> (1) Robustness Check </h4>
                 <p> Every game seed could have a different ranking, but spending a ton of money benchmarking the models wasn't my goal here.
                     It's probably the fastest way to get a more definitive answer! However, another approach is to have all models play 
                     the same game together. At every round, you ask every model to pick a word given the board and rack. You can then score 
                     these words against each other. This is way fairer than simulating real games, as each model is evaluated on its 
                     ability to solve the same problem.
                 </p>
-                <h4> Turn Dataset </h4>
+                <h4> (2) Turn Dataset </h4>
                 <p> By running this approach with a model like Gemini Flash, you can cheaply generate a whole dataset of Scrabble boards, racks, 
                     and possible scoring words. This frees you from having to play the full games out and lets you do the experiment above 
                     (or whatever RL tasks you want!). 
